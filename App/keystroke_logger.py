@@ -15,8 +15,8 @@ class KeystrokeLogger:
         self.WINDOW_SIZE = 50
         self.MAX_INTERVAL = 10
 
-        self.model = joblib.load("keystroke_model.pkl")
-        self.le = joblib.load("label_encoder.pkl")
+        self.model = joblib.load("../Models/keystroke_model.pkl")
+        self.le = joblib.load("../Models/label_encoder.pkl")
 
         self.intervals = []
         self.last_time = None
