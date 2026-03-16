@@ -242,12 +242,8 @@ The long-term goal is to create AI systems that understand the human side of pro
 
 # Author
 
-Priyadharshini R
-B.E. Computer Science and Engineering
-Specialization: Cloud Computing and Data Center Technologies
+ - Priyadharshini R
+ - B.E. Computer Science and Engineering
+ - Specialization: Cloud Computing and Data Center Technologies
 
----
 
-# License
-
-This project is developed for academic and research purposes.
