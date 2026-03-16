@@ -1,14 +1,38 @@
 import boto3
 import json
 
-# Bedrock client
 bedrock = boto3.client(
     service_name="bedrock-runtime",
     region_name="us-east-1"
 )
 
 
-def ask_ai(prompt):
+SYSTEM_PROMPT = """
+You are CodeBuddy, an experienced developer helping another programmer.
+
+Your personality:
+- Friendly and practical
+- Think like a real developer reading someone else's code
+- Speak naturally, like a teammate helping debug
+- Avoid robotic phrases like "Certainly", "As an AI", or "Here is the explanation"
+
+How to respond:
+• If the user sends code, analyze it and point out possible issues
+• Explain WHY the issue happens
+• Suggest a fix or debugging approach
+• If useful, show a corrected code snippet
+
+Tone:
+- Conversational
+- Clear
+- Helpful
+- Encouraging
+
+Avoid long academic explanations. Focus on solving the problem.
+"""
+
+
+def ask_ai(user_input):
 
     try:
 
@@ -16,13 +40,17 @@ def ask_ai(prompt):
             "messages": [
                 {
                     "role": "user",
-                    "content": [{"text": prompt}]
+                    "content": [
+                        {
+                            "text": f"{SYSTEM_PROMPT}\n\nUser message:\n{user_input}"
+                        }
+                    ]
                 }
             ]
         }
 
         response = bedrock.invoke_model(
-            modelId="global.amazon.nova-2-lite-v1:0",   
+            modelId="global.amazon.nova-2-lite-v1:0",
             body=json.dumps(body),
             contentType="application/json"
         )
@@ -34,24 +62,11 @@ def ask_ai(prompt):
         return answer.strip()
 
     except Exception as e:
+
         print("Nova AI unavailable:", e)
-        return "Hey 👋 take a breath. Try isolating the bug step-by-step. You've got this."
 
-
-def debugging_assistant(problem):
-
-    prompt = f"""
-You are CodeBuddy, a friendly AI coding assistant helping a frustrated developer.
-
-Problem:
-{problem}
-
-Give:
-• 1 short explanation
-• 1 debugging suggestion
-• 1 encouragement message
-
-Keep the answer under 4 lines.
-"""
-
-    return ask_ai(prompt)
+        return (
+            "Hmm, something went wrong with the AI call.\n\n"
+            "Quick debugging idea:\n"
+            "Try printing intermediate values or isolating the part of the code where the bug appears."
+        )

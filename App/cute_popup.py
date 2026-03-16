@@ -1,60 +1,151 @@
-import tkinter as tk
-from tkinter import scrolledtext
+import customtkinter as ctk
 from nova_assistant import ask_ai
+import threading
+import time
+
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("blue")
 
 
 def show_cute_popup(initial_message):
 
-    root = tk.Tk()
+    root = ctk.CTk()
     root.title("CodeBuddy 🤖")
-    root.geometry("520x420")
-    root.configure(bg="#eef5ff")
+    root.geometry("720x600")
 
-    # Title
-    title = tk.Label(
-        root,
+    root.configure(fg_color="#0f172a")
+
+    # ================= HEADER =================
+
+    header = ctk.CTkFrame(root, fg_color="#111827", corner_radius=0)
+    header.pack(fill="x")
+
+    title = ctk.CTkLabel(
+        header,
         text="🤖 CodeBuddy",
-        font=("Segoe UI", 16, "bold"),
-        bg="#eef5ff",
-        fg="#2c3e50"
+        font=("Segoe UI", 26, "bold")
     )
-    title.pack(pady=(10, 2))
+    title.pack(pady=(15, 0))
 
-    subtitle = tk.Label(
-        root,
+    subtitle = ctk.CTkLabel(
+        header,
         text="Your AI Debug Companion",
-        font=("Segoe UI", 10),
-        bg="#eef5ff",
-        fg="#5a6a7a"
+        font=("Segoe UI", 13),
+        text_color="#9ca3af"
     )
-    subtitle.pack(pady=(0, 10))
+    subtitle.pack(pady=(0, 15))
 
-    # Chat box
-    chat_box = scrolledtext.ScrolledText(
+    # ================= CHAT AREA =================
+
+    chat_frame = ctk.CTkScrollableFrame(
         root,
-        height=14,
-        width=60,
-        wrap="word",
-        font=("Segoe UI", 10),
-        bg="white",
-        fg="#2c3e50",
-        bd=1
+        fg_color="#020617",
+        corner_radius=12
     )
 
-    chat_box.pack(padx=15, pady=5)
-    chat_box.insert(tk.END, "CodeBuddy 🤖:\n" + initial_message + "\n\n")
-    chat_box.config(state="disabled")
+    chat_frame.pack(fill="both", expand=True, padx=20, pady=15)
 
-    # Input frame
-    input_frame = tk.Frame(root, bg="#eef5ff")
-    input_frame.pack(pady=10)
+    # ================= ADD MESSAGE FUNCTION =================
 
-    user_input = tk.Entry(
+    def add_message(text, sender):
+
+        bubble_frame = ctk.CTkFrame(chat_frame, fg_color="transparent")
+        bubble_frame.pack(fill="x", pady=10)
+
+        if sender == "user":
+
+            bubble = ctk.CTkLabel(
+                bubble_frame,
+                text=text,
+                wraplength=480,
+                justify="right",
+                fg_color="#2563eb",
+                text_color="white",
+                corner_radius=18,
+                padx=14,
+                pady=10
+            )
+
+            bubble.pack(anchor="e", padx=10)
+
+        else:
+
+            bubble = ctk.CTkLabel(
+                bubble_frame,
+                text=text,
+                wraplength=480,
+                justify="left",
+                fg_color="#1e293b",
+                text_color="white",
+                corner_radius=18,
+                padx=14,
+                pady=10
+            )
+
+            bubble.pack(anchor="w", padx=10)
+
+        root.update_idletasks()
+
+        # auto scroll to bottom
+        chat_frame._parent_canvas.yview_moveto(1)
+
+    # ================= TYPING INDICATOR =================
+
+    def show_typing():
+
+        bubble_frame = ctk.CTkFrame(chat_frame, fg_color="transparent")
+        bubble_frame.pack(fill="x", pady=10)
+
+        typing_label = ctk.CTkLabel(
+            bubble_frame,
+            text="CodeBuddy is thinking",
+            fg_color="#1e293b",
+            corner_radius=18,
+            padx=14,
+            pady=10
+        )
+
+        typing_label.pack(anchor="w", padx=10)
+
+        for i in range(3):
+            for dots in [" .", " ..", " ..."]:
+                typing_label.configure(text="CodeBuddy is thinking" + dots)
+                root.update()
+                time.sleep(0.4)
+
+        bubble_frame.destroy()
+
+    # ================= INITIAL MESSAGE =================
+
+    add_message(initial_message, "bot")
+
+    # ================= INPUT AREA =================
+
+    input_frame = ctk.CTkFrame(
+        root,
+        fg_color="#111827",
+        corner_radius=20
+    )
+
+    input_frame.pack(fill="x", padx=20, pady=(0, 15))
+
+    user_input = ctk.CTkEntry(
         input_frame,
-        width=40,
-        font=("Segoe UI", 10)
+        placeholder_text="Ask CodeBuddy something...",
+        height=42
     )
-    user_input.pack(side=tk.LEFT, padx=5)
+
+    user_input.pack(side="left", fill="x", expand=True, padx=10, pady=10)
+
+    # ================= SEND MESSAGE =================
+
+    def process_ai(question):
+
+        show_typing()
+
+        response = ask_ai(question)
+
+        add_message(response, "bot")
 
     def send_message():
 
@@ -63,41 +154,23 @@ def show_cute_popup(initial_message):
         if question == "":
             return
 
-        chat_box.config(state="normal")
+        add_message(question, "user")
 
-        chat_box.insert(tk.END, "You: " + question + "\n")
+        user_input.delete(0, "end")
 
-        response = ask_ai(question)
+        threading.Thread(target=process_ai, args=(question,)).start()
 
-        chat_box.insert(tk.END, "CodeBuddy 🤖: " + response + "\n\n")
+    user_input.bind("<Return>", lambda e: send_message())
 
-        chat_box.see(tk.END)
-        chat_box.config(state="disabled")
-
-        user_input.delete(0, tk.END)
-
-    user_input.bind("<Return>", lambda event: send_message())
-
-    send_button = tk.Button(
+    send_button = ctk.CTkButton(
         input_frame,
-        text="Send",
-        command=send_message,
-        bg="#4da6ff",
-        fg="white",
-        font=("Segoe UI", 10, "bold"),
-        padx=10
+        text="➤",
+        font=("Segoe UI", 18, "bold"),
+        width=50,
+        corner_radius=20,
+        command=send_message
     )
 
-    send_button.pack(side=tk.LEFT)
-
-    close_button = tk.Button(
-        root,
-        text="Close",
-        command=root.destroy,
-        font=("Segoe UI", 9),
-        bg="#d9e6ff"
-    )
-
-    close_button.pack(pady=5)
+    send_button.pack(side="right", padx=10)
 
     root.mainloop()
