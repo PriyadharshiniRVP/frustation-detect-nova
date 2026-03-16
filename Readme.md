@@ -1,4 +1,4 @@
-# AI-Based Frustration Detection System for Developers
+# Amazon Nova Powered Frustration Detection System for Developers
 
 An AI-powered system that detects developer frustration during coding sessions using keystroke dynamics and facial emotion recognition, combined with an AI debugging assistant powered by Amazon Nova.
 
