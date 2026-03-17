@@ -250,6 +250,8 @@ The long-term goal is to create AI systems that understand the human side of pro
 
 ``git clone https://github.com/PriyadharshiniRVP/frustation-detect-nova ``
 
+---
+
 # Requirements
  - I have added everything in requirements.txt
 
