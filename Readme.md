@@ -249,6 +249,6 @@ The long-term goal is to create AI systems that understand the human side of pro
    ---
 # Cloning the Repo
 
-``git clone https://github.com/PriyadharshiniRVP/frustation-detect-nova
+``git clone https://github.com/PriyadharshiniRVP/frustation-detect-nova ``
 
 
