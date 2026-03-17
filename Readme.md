@@ -155,11 +155,10 @@ models/
 
 training/
 │ train_keystroke_model.py
-│ train_fusion_model.py
+
 
 training_data/
-│ keystroke_dataset.csv
-│ processed_data.csv
+│ session.csv
 
 README.md
 
