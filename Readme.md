@@ -246,4 +246,9 @@ The long-term goal is to create AI systems that understand the human side of pro
  - B.E. Computer Science and Engineering
  - Specialization: Cloud Computing and Data Center Technologies
 
+   ---
+# Cloning the Repo
+
+``git clone https://github.com/PriyadharshiniRVP/frustation-detect-nova
+
 
